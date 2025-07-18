@@ -1,39 +1,38 @@
-import React, { useState } from 'react';
-import {
-  View,
-  TextInput,
-  Button,
-  StyleSheet,
-  Text,
-  Keyboard,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, Button, ActivityIndicator, StyleSheet } from 'react-native';
 import { fetchWeatherByCity } from '../utils/fetchWeather';
+import { fetchWeatherByCoords } from '../utils/getWeatherFromLocation';
 
-const Home: React.FC = () => {
-  const [city, setCity] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
+export default function Home() {
   const [weather, setWeather] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [city, setCity] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await fetchWeatherByCoords();
+        setWeather(data);
+        setCity(data.name);
+      } catch (e: any) {
+        setError('No se pudo obtener el clima automáticamente');
+      }
+      setLoading(false);
+    })();
+  }, []);
 
   const handleSearch = async () => {
-    if (!city.trim()) {
-      setError('Por favor, ingresa una ciudad');
-      return;
-    }
-
-    setError(null);
-    Keyboard.dismiss();
     setLoading(true);
-    setWeather(null);
-
     try {
       const data = await fetchWeatherByCity(city);
       setWeather(data);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setError('');
+    } catch (e: any) {
+      setError('No se pudo encontrar la ciudad');
     }
+    setLoading(false);
   };
 
   return (
@@ -42,79 +41,31 @@ const Home: React.FC = () => {
 
       <TextInput
         style={styles.input}
-        placeholder="Escribí una ciudad..."
+        placeholder="Buscar ciudad..."
         value={city}
         onChangeText={setCity}
       />
-
+      <Button title="Buscar" onPress={handleSearch} />
+      {loading && <ActivityIndicator size="large" />}
       {error && <Text style={styles.error}>{error}</Text>}
-
-      <Button title="Buscar clima" onPress={handleSearch} />
-
-      {loading && <Text style={styles.loading}>Cargando...</Text>}
-
       {weather && (
-        <View style={styles.result}>
+        <View style={styles.weatherContainer}>
           <Text style={styles.city}>{weather.name}</Text>
-          <Text style={styles.temp}>
-            {Math.round(weather.main.temp)}°C
-          </Text>
-          <Text style={styles.desc}>{weather.weather[0].description}</Text>
+          <Text style={styles.temp}>{weather.main.temp}°C</Text>
+          <Text style={styles.description}>{weather.weather[0].description}</Text>
         </View>
       )}
     </View>
   );
-};
-
-export default Home;
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    justifyContent: 'center',
-    backgroundColor: '#f2f2f2',
-  },
-  title: {
-    fontSize: 32,
-    marginBottom: 24,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  input: {
-    backgroundColor: 'white',
-    padding: 12,
-    borderRadius: 8,
-    fontSize: 18,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  error: {
-    color: 'red',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  loading: {
-    textAlign: 'center',
-    marginTop: 16,
-    fontSize: 16,
-  },
-  result: {
-    marginTop: 24,
-    alignItems: 'center',
-  },
-  city: {
-    fontSize: 28,
-    fontWeight: 'bold',
-  },
-  temp: {
-    fontSize: 48,
-    fontWeight: '300',
-  },
-  desc: {
-    fontSize: 20,
-    fontStyle: 'italic',
-    color: '#555',
-  },
+  container: {     flex: 1, backgroundColor: '#f0f0f0', paddingTop: 100, paddingHorizontal: 16, },
+  input: { borderWidth: 1, padding: 10, marginBottom: 10, borderRadius: 6 },
+  error: { color: 'red', marginTop: 10 },
+  weatherContainer: { marginTop: 20, alignItems: 'center' },
+  city: { fontSize: 24, fontWeight: 'bold' },
+  temp: { fontSize: 48 },
+  description: { fontSize: 18, fontStyle: 'italic' },
+  title: { fontSize: 32, marginBottom: 24, textAlign: 'center', fontWeight: 'bold',},
 });
