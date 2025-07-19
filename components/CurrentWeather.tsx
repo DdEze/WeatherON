@@ -26,13 +26,13 @@ const CurrentWeather: React.FC<Props> = ({ city, icon, temp, description, humidi
         source={{ uri: `https://openweathermap.org/img/wn/${icon}@4x.png` }}
         style={styles.icon}
       />
-      <Text style={styles.temp}>{Math.round(temp)}°C</Text>
-      <Text style={styles.humidity}>Humedad: {humidity}%</Text>
+      <Text style={styles.temp}>🌡️{Math.round(temp)}°C</Text>
+      <Text style={styles.humidity}>💧 {humidity}%</Text>
       <Text>
-        Índice UV:{' '}
+        ☀:{' '}
         {uvIndex !== null ? `${uvIndex} (${getUvRiskLevel(uvIndex)})` : 'No disponible'}
       </Text>
-      <Text style={styles.description}>{description}</Text>
+      <Text style={styles.description}>☁️ {description}</Text>
     </View>
   );
 };

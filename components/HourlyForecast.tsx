@@ -24,9 +24,9 @@ const HourlyForecast: React.FC<Props> = ({ forecastList, darkMode }) => (
             }}
             style={styles.icon}
           />
-          <Text style={styles.temp}>{Math.round(item.main.temp)}°C</Text>
-          <Text style={styles.info}>Humedad: {item.main.humidity}%</Text>
-          <Text style={styles.desc}>{item.weather[0].description}</Text>
+          <Text style={styles.temp}>🌡️ {Math.round(item.main.temp)}°C</Text>
+          <Text style={styles.info}>💧 {item.main.humidity}%</Text>
+          <Text style={styles.desc}>☁️ {item.weather[0].description}</Text>
         </View>
       ))}
     </ScrollView>

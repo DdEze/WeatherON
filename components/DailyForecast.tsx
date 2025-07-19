@@ -6,33 +6,68 @@ type Props = {
   darkMode: boolean;
 };
 
-const DailyForecast: React.FC<Props> = ({ forecastList, darkMode }) => {
-  // Agrupar por día (1 item por día)
-  const days = forecastList.filter((item, index, arr) => {
-    const date = new Date(item.dt * 1000).getDate();
-    const prevDate = index > 0 ? new Date(arr[index - 1].dt * 1000).getDate() : null;
-    return date !== prevDate;
-  }).slice(1, 6); // Mostrar los próximos 5 días (ignorando hoy)
+const DailyForecast: React.FC<Props> = ({ forecastList = [], darkMode }) => {
+  if (!forecastList || forecastList.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={[styles.title, darkMode && { color: 'white' }]}>
+          Cargando pronóstico...
+        </Text>
+      </View>
+    );
+  }
+
+  // Agrupar ítems por día (usamos un diccionario)
+  const groupedByDay: Record<string, any[]> = {};
+
+  forecastList.forEach((item) => {
+    const date = item.dt_txt.split(' ')[0]; // YYYY-MM-DD
+    if (!groupedByDay[date]) {
+      groupedByDay[date] = [];
+    }
+    groupedByDay[date].push(item);
+  });
+
+  // Obtener los próximos 5 días (excluyendo hoy)
+  const today = new Date().toISOString().split('T')[0];
+  const futureDays = Object.keys(groupedByDay)
+    .filter((date) => date !== today)
+    .slice(0, 5);
 
   return (
     <View style={styles.container}>
       <Text style={[styles.title, darkMode && { color: 'white' }]}>Próximos días</Text>
-      {days.map((item) => {
-        const date = new Date(item.dt * 1000);
-        const day = date.toLocaleDateString(undefined, { weekday: 'long' });
+      {futureDays.map((date) => {
+        const items = groupedByDay[date];
+        const temps = items.map((i) => i.main.temp);
+        const minTemp = Math.round(Math.min(...temps));
+        const maxTemp = Math.round(Math.max(...temps));
+        const humidity = Math.round(
+          items.reduce((acc, i) => acc + i.main.humidity, 0) / items.length
+        );
+        const weather = items[0].weather[0]; // Primer ítem como muestra
+
+        const day = new Date(date).toLocaleDateString(undefined, {
+          weekday: 'long',
+        });
 
         return (
-          <View key={item.dt} style={styles.card}>
-            <Text style={styles.day}>{day}</Text>
-            <Image
-              source={{
-                uri: `https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`,
-              }}
-              style={styles.icon}
-            />
-            <Text style={styles.temp}>{Math.round(item.main.temp)}°C</Text>
-            <Text style={styles.humidity}>Humedad: {item.main.humidity}%</Text>
-            <Text style={styles.desc}>{item.weather[0].description}</Text>
+          <View key={date} style={styles.card}>
+            <View style={styles.left}>
+              <Text style={styles.day}>{day}</Text>
+              <Image
+                source={{
+                  uri: `https://openweathermap.org/img/wn/${weather.icon}@2x.png`,
+                }}
+                style={styles.icon}
+              />
+            </View>
+
+            <View style={styles.right}>
+              <Text style={styles.temp}>🌡️ Mín: {minTemp}°C / Máx: {maxTemp}°C</Text>
+              <Text style={styles.humidity}>💧 {humidity}% humedad</Text>
+              <Text style={styles.desc}>☁️ {weather.description}</Text>
+            </View>
           </View>
         );
       })}
@@ -53,7 +88,6 @@ const styles = StyleSheet.create({
   },
   card: {
     flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: 'white',
     padding: 12,
     borderRadius: 10,
@@ -61,18 +95,26 @@ const styles = StyleSheet.create({
     elevation: 3,
     justifyContent: 'space-between',
   },
-  day: { fontSize: 16, fontWeight: 'bold', flex: 1 },
+  left: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: 80,
+  },
+  day: { fontSize: 16, fontWeight: 'bold', marginBottom: 4 },
   icon: { width: 50, height: 50 },
-  temp: { fontSize: 18, fontWeight: '600', width: 50, textAlign: 'right' },
+  right: {
+    flex: 1,
+    paddingLeft: 10,
+    justifyContent: 'center',
+  },
+  temp: { fontSize: 16, fontWeight: '600' },
+  humidity: { fontSize: 14, color: '#666', marginTop: 4 },
   desc: {
     fontSize: 14,
     color: '#555',
     fontStyle: 'italic',
-    flex: 2,
-    textAlign: 'right',
-    marginLeft: 10,
+    marginTop: 4,
   },
-  humidity: { fontSize: 14, color: '#666', marginTop: 4 },
 });
 
 export default DailyForecast;

@@ -108,7 +108,7 @@ export default function Home() {
       </View>
 
       <Text style={[styles.title, darkMode && { color: 'white' }]}>
-        {darkMode ? '🌙 WeatherOn' : '🌤 WeatherOn'}
+        {darkMode ? '🌒 WeatherOn' : '🌤 WeatherOn'}
       </Text>
 
        <TextInput
