@@ -11,7 +11,7 @@
 
 ## Descripción
 
-Una aplicación web simple para consultar el pronóstico del clima diario, incluyendo temperaturas máximas, mínimas, humedad y próximamente índice UV.
+Una aplicación movil simple para consultar el pronóstico del clima diario, incluyendo temperaturas máximas, mínimas, humedad y próximamente índice UV.
 
 ---
 
