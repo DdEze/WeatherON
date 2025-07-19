@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Keyboard,
   ScrollView,
+  View
 } from 'react-native';
 import { fetchWeatherByCity } from '../utils/fetchWeather';
 import { fetchWeatherByCoords } from '../utils/getWeatherFromLocation';
@@ -26,6 +27,8 @@ export default function Home() {
   const [error, setError] = useState('');
   const [forecast, setForecast] = useState<any>(null);
   const [uvIndex, setUvIndex] = useState<number | null>(null);
+  const [darkMode, setDarkMode] = useState(false);
+  const toggleDarkMode = () => setDarkMode(!darkMode);
 
   useEffect(() => {
     (async () => {
@@ -91,15 +94,38 @@ export default function Home() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>🌤 WeatherOn</Text>
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        darkMode && { backgroundColor: '#121212' }
+      ]}
+    >
+      <View style={{ marginBottom: 20 }}>
+        <Button
+          title={darkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+          onPress={toggleDarkMode}
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
+      <Text style={[styles.title, darkMode && { color: 'white' }]}>
+        {darkMode ? '🌙 WeatherOn' : '🌤 WeatherOn'}
+      </Text>
+
+       <TextInput
+        style={[
+          styles.input,
+          darkMode && {
+            backgroundColor: '#333',
+            color: 'white',
+            borderColor: '#555',
+          }
+        ]}
         placeholder="Buscar ciudad..."
+        placeholderTextColor={darkMode ? '#aaa' : '#888'}
         value={city}
         onChangeText={setCity}
       />
+
       <Button title="Buscar" onPress={handleSearch} />
 
       {loading && <ActivityIndicator size="large" style={{ marginTop: 20 }} />}
@@ -118,8 +144,8 @@ export default function Home() {
               uvIndex={uvIndex}
             />
           )}
-          {forecast && <HourlyForecast forecastList={forecast.list} />}
-          {forecast && <DailyForecast forecastList={forecast.list} />}
+          {forecast && <HourlyForecast forecastList={forecast.list} darkMode={darkMode} />}
+          {forecast && <DailyForecast forecastList={forecast.list} darkMode={darkMode} />}
           {forecast && (
             <ForecastChart data={formatChartData(forecast.list)} />
           )}

@@ -3,11 +3,12 @@ import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
 
 type Props = {
   forecastList: any[];
+  darkMode: boolean;
 };
 
-const HourlyForecast: React.FC<Props> = ({ forecastList }) => (
+const HourlyForecast: React.FC<Props> = ({ forecastList, darkMode }) => (
   <View style={{ marginTop: 30, width: '100%' }}>
-    <Text style={styles.title}>Pronóstico próximo</Text>
+    <Text style={[styles.title, darkMode && { color: 'white' }]}>Pronóstico próximo</Text>
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       {forecastList.slice(0, 8).map((item) => (
         <View key={item.dt} style={styles.card}>

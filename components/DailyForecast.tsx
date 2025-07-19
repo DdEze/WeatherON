@@ -3,9 +3,10 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 
 type Props = {
   forecastList: any[];
+  darkMode: boolean;
 };
 
-const DailyForecast: React.FC<Props> = ({ forecastList }) => {
+const DailyForecast: React.FC<Props> = ({ forecastList, darkMode }) => {
   // Agrupar por día (1 item por día)
   const days = forecastList.filter((item, index, arr) => {
     const date = new Date(item.dt * 1000).getDate();
@@ -15,7 +16,7 @@ const DailyForecast: React.FC<Props> = ({ forecastList }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Próximos días</Text>
+      <Text style={[styles.title, darkMode && { color: 'white' }]}>Próximos días</Text>
       {days.map((item) => {
         const date = new Date(item.dt * 1000);
         const day = date.toLocaleDateString(undefined, { weekday: 'long' });
