@@ -30,6 +30,7 @@ const DailyForecast: React.FC<Props> = ({ forecastList }) => {
               style={styles.icon}
             />
             <Text style={styles.temp}>{Math.round(item.main.temp)}°C</Text>
+            <Text style={styles.humidity}>Humedad: {item.main.humidity}%</Text>
             <Text style={styles.desc}>{item.weather[0].description}</Text>
           </View>
         );
@@ -70,6 +71,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     marginLeft: 10,
   },
+  humidity: { fontSize: 14, color: '#666', marginTop: 4 },
 });
 
 export default DailyForecast;

@@ -12,6 +12,7 @@ import { fetchWeatherByCity } from '../utils/fetchWeather';
 import { fetchWeatherByCoords } from '../utils/getWeatherFromLocation';
 import { fetchForecastByCoords } from '../utils/fetchForecast';
 import { formatChartData } from '../utils/formatChartData';
+import { getUvIndex } from '../utils/getUvIndex';
 
 import CurrentWeather from '../components/CurrentWeather';
 import HourlyForecast from '../components/HourlyForecast';
@@ -24,6 +25,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [forecast, setForecast] = useState<any>(null);
+  const [uvIndex, setUvIndex] = useState<number | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -32,17 +34,22 @@ export default function Home() {
         const data = await fetchWeatherByCoords();
         setWeather(data);
         setCity(data.name);
+        const uv = await getUvIndex(data.coord.lat, data.coord.lon);
+        setUvIndex(uv);
+
 
         const forecastData = await fetchForecastByCoords(
           data.coord.lat,
           data.coord.lon
         );
         setForecast(forecastData);
+
         setError('');
       } catch (e: any) {
         setError('No se pudo obtener el clima automáticamente');
         setWeather(null);
         setForecast(null);
+        setUvIndex(null);
       } finally {
         setLoading(false);
       }
@@ -59,6 +66,7 @@ export default function Home() {
     setError('');
     setWeather(null);
     setForecast(null);
+    setUvIndex(null);
     Keyboard.dismiss();
 
     try {
@@ -70,11 +78,13 @@ export default function Home() {
         data.coord.lon
       );
       setForecast(forecastData);
+
       setError('');
     } catch (e: any) {
       setError('No se pudo encontrar la ciudad');
       setWeather(null);
       setForecast(null);
+      setUvIndex(null);
     } finally {
       setLoading(false);
     }
@@ -104,6 +114,8 @@ export default function Home() {
               temp={weather.main.temp}
               description={weather.weather[0].description}
               icon={weather.weather[0].icon}
+              humidity={weather.main.humidity}
+              uvIndex={uvIndex}
             />
           )}
           {forecast && <HourlyForecast forecastList={forecast.list} />}

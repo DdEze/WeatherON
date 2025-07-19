@@ -24,6 +24,7 @@ const HourlyForecast: React.FC<Props> = ({ forecastList }) => (
             style={styles.icon}
           />
           <Text style={styles.temp}>{Math.round(item.main.temp)}°C</Text>
+          <Text style={styles.info}>Humedad: {item.main.humidity}%</Text>
           <Text style={styles.desc}>{item.weather[0].description}</Text>
         </View>
       ))}
@@ -61,6 +62,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 4,
   },
+  info: { fontSize: 12, color: '#555', marginTop: 2 },
 });
 
 export default HourlyForecast;
