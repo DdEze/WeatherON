@@ -11,10 +11,12 @@ import {
 import { fetchWeatherByCity } from '../utils/fetchWeather';
 import { fetchWeatherByCoords } from '../utils/getWeatherFromLocation';
 import { fetchForecastByCoords } from '../utils/fetchForecast';
+import { formatChartData } from '../utils/formatChartData';
 
 import CurrentWeather from '../components/CurrentWeather';
 import HourlyForecast from '../components/HourlyForecast';
 import DailyForecast from '../components/DailyForecast';
+import ForecastChart from '../components/ForecastChart';
 
 export default function Home() {
   const [weather, setWeather] = useState<any>(null);
@@ -106,6 +108,9 @@ export default function Home() {
           )}
           {forecast && <HourlyForecast forecastList={forecast.list} />}
           {forecast && <DailyForecast forecastList={forecast.list} />}
+          {forecast && (
+            <ForecastChart data={formatChartData(forecast.list)} />
+          )}
         </>
       )}
     </ScrollView>
