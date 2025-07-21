@@ -27,17 +27,17 @@ Una aplicación movil simple para consultar el pronóstico del clima diario, inc
 
 - Gráfico interactivo del clima
 
-- Preparado para mostrar índice UV (próximamente)
+- Preparado para mostrar índice UV
 
 ---
 
 ## Tecnologías utilizadas
 
-React Native + TypeScript
+- React Native + TypeScript
 
-OpenWeatherMap API (One Call)
+- OpenWeatherMap API (One Call)
 
-Chart.js (para gráficos)
+- Chart.js (para gráficos)
 
 ---
 

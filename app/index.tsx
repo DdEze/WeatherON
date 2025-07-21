@@ -76,6 +76,9 @@ export default function Home() {
       const data = await fetchWeatherByCity(city);
       setWeather(data);
 
+      const uv = await getUvIndex(data.coord.lat, data.coord.lon);
+      setUvIndex(uv);
+
       const forecastData = await fetchForecastByCoords(
         data.coord.lat,
         data.coord.lon
